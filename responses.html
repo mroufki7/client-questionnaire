@@ -1,426 +1,616 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Questionnaire Responses - Admin Dashboard</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Responses — Client Questionnaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow:    #FFBE00;
+    --yellow-dim:#C49200;
+    --bg:        #F5F4F0;
+    --surface:   #FFFFFF;
+    --surface-2: #F0EEE9;
+    --border:    #E0DDD6;
+    --border-hi: #C8C5BC;
+    --ink:       #1A1A18;
+    --ink-soft:  #5C5B57;
+    --muted:     #9A9892;
+    --white:     #FFFFFF;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
 
-    body {
-      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #1A1A1F;
-      color: #F5F5F5;
-      padding: 24px;
-    }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
 
-    header {
-      margin-bottom: 40px;
-    }
+  /* ── COVER ── */
+  .cover {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 12px;
+    animation: fadeUp .4s ease backwards;
+  }
+  .cover-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 56px 56px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: .35;
+    pointer-events: none;
+  }
+  .cover-inner::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 180px; height: 5px;
+    background: var(--yellow);
+    border-bottom-left-radius: 4px;
+  }
+  .cover-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-hi);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    padding: 5px 12px 5px 6px;
+    border-radius: 999px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .cover-tag-dot {
+    width: 18px; height: 18px;
+    background: var(--yellow);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .cover h1 {
+    font-size: clamp(36px, 5.5vw, 60px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    letter-spacing: -.025em;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover h1 .line2 {
+    color: var(--yellow);
+    display: block;
+    font-size: 0.55em;
+    margin-top: 16px;
+  }
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+  }
+  .cover-subtitle {
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    max-width: 44ch;
+  }
+  .cover-count { text-align: right; flex-shrink: 0; }
+  .cover-count-num {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--yellow);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  .cover-count-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 8px;
-      color: #FFFFFF;
-    }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
 
-    .subtitle {
-      color: #B8B8C4;
-      font-size: 14px;
-    }
+  /* ── SELECTOR BAR ── */
+  .selector-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 28px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    animation: fadeUp .42s ease backwards;
+    animation-delay: .05s;
+  }
+  .selector-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .selector-bar select {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--radius-sm);
+    padding: 10px 36px 10px 14px;
+    font-size: 14.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .18s, box-shadow .18s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A9892' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .selector-bar select:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px rgba(255,190,0,.12);
+  }
+  .btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: transform .14s, opacity .14s;
+    letter-spacing: .01em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { transform: translateY(-1px); opacity: .88; }
+  .btn-primary { background: var(--yellow); color: var(--bg); }
+  .btn-ghost {
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border: 1px solid var(--border-hi);
+  }
 
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
+  /* ── SECTION CARD ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px 44px 40px;
+    margin-top: 12px;
+    animation: fadeUp .45s cubic-bezier(.22,.8,.2,1) backwards;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--yellow);
+    text-transform: uppercase;
+    background: rgba(255,190,0,.1);
+    border: 1px solid rgba(255,190,0,.2);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    line-height: 1.2;
+  }
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+  /* ── Q/A PAIR ── */
+  .q { margin-bottom: 30px; }
+  .q:last-child { margin-bottom: 0; }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #7C3AED 0%, #9F5FFF 100%);
-      color: white;
-    }
+  .q-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .q-num {
+    color: var(--yellow);
+    margin-right: 5px;
+  }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
-    }
+  .answer {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.7;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 13px 16px;
+    min-height: 46px;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .answer.empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 14px;
+  }
+  .answer-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .answer-chip {
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: var(--yellow);
+    border: 1px solid var(--yellow);
+    color: var(--bg);
+  }
+  .answer-chip.none {
+    background: var(--surface-2);
+    border-color: var(--border-hi);
+    color: var(--muted);
+    font-style: italic;
+    font-weight: 400;
+  }
 
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: #F5F5F5;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
+  /* ── STATE CARDS ── */
+  .state-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 72px 44px;
+    margin-top: 12px;
+    text-align: center;
+    animation: fadeUp .45s ease backwards;
+  }
+  .state-icon { font-size: 48px; margin-bottom: 20px; }
+  .state-title { font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+  .state-text {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    max-width: 40ch;
+    margin: 0 auto;
+  }
+  .state-text a { color: var(--yellow-dim); font-weight: 600; text-decoration: none; }
+  .state-text a:hover { text-decoration: underline; }
+  .state-text strong { color: var(--ink); }
 
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 32px;
-      font-weight: 700;
-      color: #7C3AED;
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: #B8B8C4;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .responses-list {
-      display: grid;
-      gap: 16px;
-    }
-
-    .response-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 24px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .response-card:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .response-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .response-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: #FFFFFF;
-    }
-
-    .response-date {
-      font-size: 13px;
-      color: #B8B8C4;
-    }
-
-    .response-email {
-      font-size: 13px;
-      color: #7C3AED;
-      margin-bottom: 12px;
-    }
-
-    .response-preview {
-      font-size: 13px;
-      color: #B8B8C4;
-      line-height: 1.5;
-      max-height: 60px;
-      overflow: hidden;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: #252530;
-      border-radius: 12px;
-      padding: 32px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: #B8B8C4;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    .answer-item {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .answer-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .question {
-      font-size: 13px;
-      color: #7C3AED;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .answer {
-      font-size: 14px;
-      color: #F5F5F5;
-      line-height: 1.6;
-      word-wrap: break-word;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 24px;
-      color: #B8B8C4;
-    }
-
-    .empty-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .empty-text {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .empty-subtext {
-      font-size: 13px;
-      color: #7A7A8A;
-    }
-
-    @media (max-width: 768px) {
-      .modal-content {
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  @media (max-width: 600px) {
+    .wrap { padding: 20px 16px 60px; }
+    .cover-inner { padding: 36px 28px 32px; }
+    .section { padding: 28px 22px 32px; }
+    .cover-bottom { grid-template-columns: 1fr; }
+    .cover-count { text-align: left; }
+    .selector-bar { padding: 16px 20px; gap: 10px; }
+    .selector-bar select { min-width: 100%; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>📋 Questionnaire Responses</h1>
-      <p class="subtitle">View and manage all client submissions</p>
-    </header>
+<div class="wrap">
 
-    <div class="controls">
-      <button class="btn-primary" onclick="refreshResponses()">🔄 Refresh</button>
-      <button class="btn-secondary" onclick="exportAsCSV()">📥 Export as CSV</button>
-      <button class="btn-secondary" onclick="window.location.href='/index.html'">← Back to Form</button>
-    </div>
-
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-number" id="totalCount">0</div>
-        <div class="stat-label">Total Responses</div>
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-inner">
+      <div class="cover-tag">
+        <span class="cover-tag-dot">✦</span>
+        Admin · Brand Identity
       </div>
-      <div class="stat-card">
-        <div class="stat-number" id="todayCount">0</div>
-        <div class="stat-label">Today</div>
-      </div>
-    </div>
-
-    <div class="responses-list" id="responsesList">
-      <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <div class="empty-text">No responses yet</div>
-        <div class="empty-subtext">Responses will appear here when clients submit the questionnaire</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Response Detail Modal -->
-  <div class="modal" id="responseModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle">Response Details</h2>
-        <button class="close-btn" onclick="closeModal()">✕</button>
-      </div>
-      <div id="modalBody"></div>
-    </div>
-  </div>
-
-  <script>
-    // Simulated data - In production, this would fetch from your backend
-    let allResponses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
-
-    function loadResponses() {
-      const responsesList = document.getElementById('responsesList');
-      
-      if (allResponses.length === 0) {
-        responsesList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <div class="empty-text">No responses yet</div>
-            <div class="empty-subtext">Responses will appear here when clients submit the questionnaire</div>
-          </div>
-        `;
-        updateStats();
-        return;
-      }
-
-      // Sort by most recent first
-      const sorted = [...allResponses].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-      responsesList.innerHTML = sorted.map((response, index) => `
-        <div class="response-card" onclick="viewResponse(${index})">
-          <div class="response-header">
-            <div class="response-name">${response.clientName || 'Anonymous Client'}</div>
-            <div class="response-date">${new Date(response.timestamp).toLocaleDateString()}</div>
-          </div>
-          <div class="response-email">${response.clientEmail || 'No email provided'}</div>
-          <div class="response-preview">${getPreview(response.answers)}</div>
+      <h1>Responses<span class="line2">Client questionnaire submissions</span></h1>
+      <div class="cover-bottom">
+        <p class="cover-subtitle">
+          Each submission is shown below in the same structure as the original questionnaire.
+          Select a response from the dropdown to review it in full.
+        </p>
+        <div class="cover-count">
+          <div class="cover-count-num" id="totalCount">—</div>
+          <div class="cover-count-label">Responses</div>
         </div>
-      `).join('');
+      </div>
+    </div>
+  </div>
 
-      updateStats();
+  <!-- SELECTOR BAR -->
+  <div class="selector-bar">
+    <span class="selector-label">Viewing</span>
+    <select id="submissionSelect" onchange="showSubmission(this.value)">
+      <option value="">— loading… —</option>
+    </select>
+    <button class="btn btn-primary" onclick="exportCSV()">↓ Export CSV</button>
+    <a class="btn btn-ghost" href="/">← Form</a>
+  </div>
+
+  <!-- RESPONSE SECTIONS rendered here -->
+  <div id="responseBody"></div>
+
+  <div class="footer">— Brand Identity Questionnaire · Admin View —</div>
+</div>
+
+<script>
+  // ─── Question definitions ─────────────────────────────────────────────────
+  const SECTIONS = [
+    {
+      num: 'Your Info', title: 'Client information',
+      qs: [
+        { key: 'clientName',  label: 'Full name' },
+        { key: 'clientEmail', label: 'Email address' },
+      ]
+    },
+    {
+      num: '01 / 05', title: 'About your business',
+      qs: [
+        { key: 'q1', label: '01 — What does your business do?' },
+        { key: 'q3', label: '02 — Products or services offered' },
+        { key: 'q4', label: '03 — What makes you different from competitors?' },
+        { key: 'q5', label: '04 — Main goals for the next 1–3 years' },
+      ]
+    },
+    {
+      num: '02 / 05', title: 'Your audience',
+      qs: [
+        { key: 'q6', label: '06 — Describe your ideal customer' },
+        { key: 'q7', label: '07 — Problem your product/service solves' },
+        { key: 'q8', label: '08 — How should your brand make them feel?' },
+        { key: 'q9', label: '09 — Where does your audience spend time?', chips: true },
+      ]
+    },
+    {
+      num: '03 / 05', title: 'Brand personality',
+      qs: [
+        { key: 'q10', label: '10 — Describe your brand in 5 words' },
+        { key: 'q11', label: '11 — Brand IS / IS NOT words' },
+        { key: 'q12', label: '12 — Tone of voice', chips: true },
+        { key: 'q13', label: '13 — Brands you admire and why' },
+        { key: 'q14', label: '14 — Brands or styles to avoid' },
+      ]
+    },
+    {
+      num: '04 / 05', title: 'Visual preferences',
+      qs: [
+        { key: 'q15', label: '15 — Brand colors (and colors to avoid)' },
+        { key: 'q16', label: '16 — Preferred logo type', chips: true },
+        { key: 'q17', label: '17 — Overall visual style', chips: true },
+        { key: 'q18', label: '18 — Existing visual assets to keep or build from' },
+        { key: 'q19', label: '19 — Where will the logo mainly be used?', chips: true },
+      ]
+    },
+    {
+      num: '05 / 05', title: 'Project details',
+      qs: [
+        { key: 'q20', label: '20 — Deliverables needed', chips: true },
+        { key: 'q22', label: '21 — Deadline or launch date' },
+        { key: 'q23', label: '22 — Who makes the final decisions?' },
+        { key: 'q24', label: '23 — Anything else to know?' },
+      ]
+    },
+  ];
+
+  let allSubmissions = [];
+
+  // ─── Fetch from Netlify Forms API ────────────────────────────────────────
+  async function fetchSubmissions() {
+    try {
+      const res = await fetch('/.netlify/forms/client-questionnaire/submissions');
+      if (!res.ok) throw new Error('not_netlify');
+      const data = await res.json();
+      allSubmissions = Array.isArray(data) ? data : [];
+      document.getElementById('totalCount').textContent = allSubmissions.length;
+
+      if (allSubmissions.length === 0) { showEmpty(); return; }
+
+      const sel = document.getElementById('submissionSelect');
+      sel.innerHTML = allSubmissions.map((s, i) => {
+        const name = s.data?.clientName || 'Anonymous';
+        const date = new Date(s.created_at).toLocaleDateString('en-GB', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        });
+        return `<option value="${i}">${esc(name)} — ${date}</option>`;
+      }).join('');
+
+      showSubmission(0);
+    } catch (_) {
+      showNetlifyNote();
     }
+  }
 
-    function getPreview(answers) {
-      const entries = Object.entries(answers).slice(0, 2);
-      return entries.map(([key, val]) => `${key}: ${String(val).substring(0, 50)}...`).join(' • ');
-    }
+  function showSubmission(index) {
+    const sub = allSubmissions[index];
+    if (!sub) return;
+    const data = sub.data || {};
+    const date = new Date(sub.created_at);
+    renderSections(data, date);
+  }
 
-    function viewResponse(index) {
-      const response = [...allResponses].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[index];
-      const modalTitle = document.getElementById('modalTitle');
-      const modalBody = document.getElementById('modalBody');
+  // ─── Render ───────────────────────────────────────────────────────────────
+  function renderSections(data, date) {
+    const fmt = date.toLocaleDateString('en-GB', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    }) + ' at ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-      modalTitle.textContent = response.clientName || 'Anonymous Client';
+    let html = `
+      <section class="section" style="animation-delay:.08s">
+        <div class="section-head">
+          <div class="section-num">Submission</div>
+          <div class="section-title">Received ${esc(fmt)}</div>
+        </div>
+      </section>`;
 
-      let answerHTML = `<p class="answer-email">Email: ${response.clientEmail || 'No email'}</p>
-                        <p class="answer-date">Submitted: ${new Date(response.timestamp).toLocaleString()}</p>`;
+    SECTIONS.forEach((sec, si) => {
+      html += `
+        <section class="section" style="animation-delay:${0.1 + si * 0.06}s">
+          <div class="section-head">
+            <div class="section-num">${esc(sec.num)}</div>
+            <div class="section-title">${esc(sec.title)}</div>
+          </div>`;
 
-      Object.entries(response.answers).forEach(([question, answer]) => {
-        answerHTML += `
-          <div class="answer-item">
-            <div class="question">${question}</div>
-            <div class="answer">${String(answer).replace(/\n/g, '<br>')}</div>
-          </div>
-        `;
+      sec.qs.forEach(q => {
+        const raw = data[q.key];
+        const has = raw && String(raw).trim().length > 0;
+        html += `<div class="q"><div class="q-label">${esc(q.label)}</div>`;
+
+        if (q.chips) {
+          if (has) {
+            const chips = String(raw).split(',').map(v => v.trim()).filter(Boolean);
+            html += `<div class="answer-chips">${chips.map(c => `<span class="answer-chip">${esc(c)}</span>`).join('')}</div>`;
+          } else {
+            html += `<div class="answer-chips"><span class="answer-chip none">Not answered</span></div>`;
+          }
+        } else {
+          html += `<div class="answer${has ? '' : ' empty'}">${has ? esc(String(raw)) : 'Not answered'}</div>`;
+        }
+
+        html += `</div>`;
       });
 
-      modalBody.innerHTML = answerHTML;
-      document.getElementById('responseModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('responseModal').classList.remove('active');
-    }
-
-    function updateStats() {
-      const today = new Date().toDateString();
-      const todayCount = allResponses.filter(r => new Date(r.timestamp).toDateString() === today).length;
-      document.getElementById('totalCount').textContent = allResponses.length;
-      document.getElementById('todayCount').textContent = todayCount;
-    }
-
-    function refreshResponses() {
-      loadResponses();
-      alert('Responses refreshed!');
-    }
-
-    function exportAsCSV() {
-      if (allResponses.length === 0) {
-        alert('No responses to export');
-        return;
-      }
-
-      let csv = 'Client Name,Email,Submitted,Answers\n';
-      allResponses.forEach(response => {
-        const answersText = JSON.stringify(response.answers).replace(/"/g, '""');
-        csv += `"${response.clientName || 'Anonymous'}","${response.clientEmail || 'N/A'}","${response.timestamp}","${answersText}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `questionnaire-responses-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('responseModal').addEventListener('click', (e) => {
-      if (e.target.id === 'responseModal') closeModal();
+      html += `</section>`;
     });
 
-    // Load responses on page load
-    loadResponses();
+    document.getElementById('responseBody').innerHTML = html;
+  }
 
-    // Refresh every 10 seconds
-    setInterval(loadResponses, 10000);
-  </script>
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ─── States ───────────────────────────────────────────────────────────────
+  function showEmpty() {
+    document.getElementById('submissionSelect').innerHTML = '<option>— no responses yet —</option>';
+    document.getElementById('responseBody').innerHTML = `
+      <div class="state-card">
+        <div class="state-icon">📭</div>
+        <div class="state-title">No responses yet</div>
+        <div class="state-text">Responses will appear here once clients submit the questionnaire.</div>
+      </div>`;
+  }
+
+  function showNetlifyNote() {
+    document.getElementById('totalCount').textContent = '—';
+    document.getElementById('submissionSelect').innerHTML = '<option>— deploy to Netlify to load responses —</option>';
+    document.getElementById('responseBody').innerHTML = `
+      <div class="state-card">
+        <div class="state-icon">☁️</div>
+        <div class="state-title">Deploy to Netlify to view responses</div>
+        <div class="state-text">
+          This page reads submissions directly from <strong>Netlify Forms</strong>.<br><br>
+          Once live, all client responses will appear here — structured exactly like the questionnaire, one at a time.<br><br>
+          You can also view and export them at your
+          <a href="https://app.netlify.com" target="_blank" rel="noopener">Netlify dashboard → Forms</a>.
+        </div>
+      </div>`;
+  }
+
+  // ─── Export CSV ───────────────────────────────────────────────────────────
+  function exportCSV() {
+    if (allSubmissions.length === 0) { alert('No responses to export.'); return; }
+
+    const allKeys = ['clientName','clientEmail','q1','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14','q15','q16','q17','q18','q19','q20','q22','q23','q24'];
+    const labelOf = {};
+    SECTIONS.forEach(s => s.qs.forEach(q => labelOf[q.key] = q.label));
+
+    const header = ['Submitted', ...allKeys.map(k => labelOf[k] || k)];
+    const rows = allSubmissions.map(s => {
+      const d = s.data || {};
+      return [
+        new Date(s.created_at).toLocaleString(),
+        ...allKeys.map(k => `"${String(d[k] || '').replace(/"/g, '""')}"`)
+      ];
+    });
+
+    const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `responses-${new Date().toISOString().split('T')[0]}.csv`
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  fetchSubmissions();
+</script>
 </body>
 </html>
