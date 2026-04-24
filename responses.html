@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire Responses - Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1A1A1F;
+      color: #F5F5F5;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+
+    .subtitle {
+      color: #B8B8C4;
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED 0%, #9F5FFF 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #F5F5F5;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #7C3AED;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #B8B8C4;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .responses-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .response-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .response-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .response-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .response-date {
+      font-size: 13px;
+      color: #B8B8C4;
+    }
+
+    .response-email {
+      font-size: 13px;
+      color: #7C3AED;
+      margin-bottom: 12px;
+    }
+
+    .response-preview {
+      font-size: 13px;
+      color: #B8B8C4;
+      line-height: 1.5;
+      max-height: 60px;
+      overflow: hidden;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #252530;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #B8B8C4;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .answer-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .answer-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question {
+      font-size: 13px;
+      color: #7C3AED;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .answer {
+      font-size: 14px;
+      color: #F5F5F5;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: #B8B8C4;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-text {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .empty-subtext {
+      font-size: 13px;
+      color: #7A7A8A;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 Questionnaire Responses</h1>
+      <p class="subtitle">View and manage all client submissions</p>
+    </header>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="refreshResponses()">🔄 Refresh</button>
+      <button class="btn-secondary" onclick="exportAsCSV()">📥 Export as CSV</button>
+      <button class="btn-secondary" onclick="window.location.href='/index.html'">← Back to Form</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total Responses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="todayCount">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+    </div>
+
+    <div class="responses-list" id="responsesList">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No responses yet</div>
+        <div class="empty-subtext">Responses will appear here when clients submit the questionnaire</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response Detail Modal -->
+  <div class="modal" id="responseModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Response Details</h2>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Simulated data - In production, this would fetch from your backend
+    let allResponses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
+
+    function loadResponses() {
+      const responsesList = document.getElementById('responsesList');
+      
+      if (allResponses.length === 0) {
+        responsesList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">No responses yet</div>
+            <div class="empty-subtext">Responses will appear here when clients submit the questionnaire</div>
+          </div>
+        `;
+        updateStats();
+        return;
+      }
+
+      // Sort by most recent first
+      const sorted = [...allResponses].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      responsesList.innerHTML = sorted.map((response, index) => `
+        <div class="response-card" onclick="viewResponse(${index})">
+          <div class="response-header">
+            <div class="response-name">${response.clientName || 'Anonymous Client'}</div>
+            <div class="response-date">${new Date(response.timestamp).toLocaleDateString()}</div>
+          </div>
+          <div class="response-email">${response.clientEmail || 'No email provided'}</div>
+          <div class="response-preview">${getPreview(response.answers)}</div>
+        </div>
+      `).join('');
+
+      updateStats();
+    }
+
+    function getPreview(answers) {
+      const entries = Object.entries(answers).slice(0, 2);
+      return entries.map(([key, val]) => `${key}: ${String(val).substring(0, 50)}...`).join(' • ');
+    }
+
+    function viewResponse(index) {
+      const response = [...allResponses].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[index];
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+
+      modalTitle.textContent = response.clientName || 'Anonymous Client';
+
+      let answerHTML = `<p class="answer-email">Email: ${response.clientEmail || 'No email'}</p>
+                        <p class="answer-date">Submitted: ${new Date(response.timestamp).toLocaleString()}</p>`;
+
+      Object.entries(response.answers).forEach(([question, answer]) => {
+        answerHTML += `
+          <div class="answer-item">
+            <div class="question">${question}</div>
+            <div class="answer">${String(answer).replace(/\n/g, '<br>')}</div>
+          </div>
+        `;
+      });
+
+      modalBody.innerHTML = answerHTML;
+      document.getElementById('responseModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('responseModal').classList.remove('active');
+    }
+
+    function updateStats() {
+      const today = new Date().toDateString();
+      const todayCount = allResponses.filter(r => new Date(r.timestamp).toDateString() === today).length;
+      document.getElementById('totalCount').textContent = allResponses.length;
+      document.getElementById('todayCount').textContent = todayCount;
+    }
+
+    function refreshResponses() {
+      loadResponses();
+      alert('Responses refreshed!');
+    }
+
+    function exportAsCSV() {
+      if (allResponses.length === 0) {
+        alert('No responses to export');
+        return;
+      }
+
+      let csv = 'Client Name,Email,Submitted,Answers\n';
+      allResponses.forEach(response => {
+        const answersText = JSON.stringify(response.answers).replace(/"/g, '""');
+        csv += `"${response.clientName || 'Anonymous'}","${response.clientEmail || 'N/A'}","${response.timestamp}","${answersText}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `questionnaire-responses-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('responseModal').addEventListener('click', (e) => {
+      if (e.target.id === 'responseModal') closeModal();
+    });
+
+    // Load responses on page load
+    loadResponses();
+
+    // Refresh every 10 seconds
+    setInterval(loadResponses, 10000);
+  </script>
+</body>
+</html>

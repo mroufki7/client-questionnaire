@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Client Questionnaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow:    #FFBE00;
+    --yellow-dim:#C49200;
+    --bg:        #F5F4F0;
+    --surface:   #FFFFFF;
+    --surface-2: #F0EEE9;
+    --border:    #E0DDD6;
+    --border-hi: #C8C5BC;
+    --ink:       #1A1A18;
+    --ink-soft:  #5C5B57;
+    --muted:     #9A9892;
+    --white:     #FFFFFF;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .darija {
+    font-family: 'Cairo', sans-serif;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-weight: 400;
+    display: block;
+    margin-top: 3px;
+    line-height: 1.6;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px 110px;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 12px;
+    animation: fadeUp .4s ease backwards;
+    position: relative;
+  }
+  .cover-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 56px 56px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Decorative grid lines */
+  .cover-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: .35;
+    pointer-events: none;
+  }
+  /* Yellow corner accent */
+  .cover-inner::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 180px; height: 5px;
+    background: var(--yellow);
+    border-bottom-left-radius: 4px;
+  }
+
+  .cover-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-hi);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    padding: 5px 12px 5px 6px;
+    border-radius: 999px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .cover-tag-dot {
+    width: 18px; height: 18px;
+    background: var(--yellow);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .cover h1 {
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    letter-spacing: -.025em;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover h1 .line2 {
+    color: var(--yellow);
+    display: block;
+    font-size: 0.55em;
+    margin-top: 16px;
+  }
+
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    position: relative;
+  }
+  .cover-subtitle {
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    max-width: 44ch;
+  }
+  .cover-subtitle .darija { margin-top: 6px; }
+  .cover-count {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .cover-count-num {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--yellow);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  .cover-count-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── SECTION CARD ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px 44px 40px;
+    margin-top: 12px;
+    animation: fadeUp .45s cubic-bezier(.22,.8,.2,1) backwards;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--yellow);
+    text-transform: uppercase;
+    background: rgba(255,190,0,.1);
+    border: 1px solid rgba(255,190,0,.2);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    line-height: 1.2;
+  }
+  .section-title .darija { font-size: 13px; margin-top: 2px; }
+
+  /* ── QUESTION ── */
+  .q { margin-bottom: 30px; }
+  .q:last-child { margin-bottom: 0; }
+
+  .q-label {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  .q-num {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-right: 6px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    letter-spacing: .05em;
+  }
+  .q-label .darija { font-size: 13px; margin-top: 4px; }
+
+  /* ── INPUTS ── */
+  textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 14.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color .18s, box-shadow .18s;
+    margin-top: 10px;
+    outline: none;
+    caret-color: var(--yellow);
+  }
+  textarea { min-height: 54px; line-height: 1.6; }
+  textarea:focus, input:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px rgba(255,190,0,.12);
+    background: var(--surface);
+  }
+  textarea::placeholder, input::placeholder {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── CHIPS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .chip {
+    position: relative;
+    padding: 7px 16px;
+    border: 1px solid var(--border-hi);
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    transition: all .14s ease;
+    user-select: none;
+  }
+  .chip:hover {
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+    width: 100%; height: 100%;
+  }
+  .chip:has(input:checked) {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  /* ── ACTION BAR ── */
+  .actions {
+    position: sticky;
+    bottom: 20px;
+    margin: 20px auto 0;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 999px;
+    padding: 8px 8px 8px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.12);
+    max-width: fit-content;
+  }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; }
+  .progress-bar-track {
+    width: 72px; height: 3px;
+    background: var(--border-hi);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--yellow);
+    border-radius: 999px;
+    width: 0%;
+    transition: width .3s ease;
+  }
+  .progress-text {
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .progress-text strong { color: var(--yellow); font-weight: 700; }
+  .btn {
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: transform .14s, opacity .14s;
+    letter-spacing: .01em;
+  }
+  .btn:hover { transform: translateY(-1px); opacity: .88; }
+  .btn-primary { background: var(--yellow); color: var(--bg); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 20px 16px 100px; }
+    .cover-inner { padding: 36px 28px 32px; }
+    .section { padding: 28px 22px 32px; }
+    .cover-bottom { grid-template-columns: 1fr; }
+    .cover-count { text-align: left; }
+    .actions { padding: 7px 7px 7px 18px; gap: 10px; }
+    .progress-bar-track { display: none; }
+  }
+
+  @media print {
+    @page { margin: 18mm 16mm; size: A4; }
+    body { background: #F5F4F0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap { padding: 0; max-width: 100%; }
+    .actions { display: none !important; }
+    .cover, .section { break-inside: avoid; page-break-inside: avoid; }
+    * { animation: none !important; }
+    textarea {
+      min-height: unset !important;
+      height: auto !important;
+      overflow: visible !important;
+      resize: none !important;
+      border: 1px solid #C8C5BC !important;
+      background: #F0EEE9 !important;
+    }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      border: 1px solid #C8C5BC !important;
+      background: #F0EEE9 !important;
+    }
+    .chip:has(input:checked) {
+      background: #FFBE00 !important;
+      border-color: #FFBE00 !important;
+      color: #1A1A18 !important;
+      font-weight: 600 !important;
+    }
+    .cover-inner::before { opacity: .2 !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-inner">
+      <div class="cover-tag">
+        <span class="cover-tag-dot">✦</span>
+        Brand Identity
+      </div>
+      <h1>Client Questionnaire<span class="line2">A few questions about your brand</span></h1>
+      <div class="cover-bottom">
+        <div>
+          <p class="cover-subtitle">
+            This questionnaire helps us understand your business, your vision, and the people you want to reach. The more honest your answers, the stronger your brand.
+            <span class="darija">هاد الاستبيان كيعاوننا نفهمو المشروع ديالك، الرؤية، والناس لي بغيتي توصل ليهم.</span>
+          </p>
+        </div>
+        <div class="cover-count">
+          <div class="cover-count-num">23</div>
+          <div class="cover-count-label">Questions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="bq-form" name="client-questionnaire" method="POST" netlify>
+    
+    <!-- CLIENT INFO -->
+    <section class="section" style="animation-delay:.06s">
+      <div class="section-head">
+        <div class="section-num">Your Info</div>
+        <div class="section-title">Let us know who you are
+          <span class="darija">علمنا شكون أنت</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">*</span>Your Name
+          <span class="darija">اسمك</span>
+        </label>
+        <input type="text" name="clientName" placeholder="Enter your full name…" required />
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">*</span>Your Email
+          <span class="darija">البريد الإلكتروني</span>
+        </label>
+        <input type="email" name="clientEmail" placeholder="your@email.com" required />
+      </div>
+    </section>
+
+    <!-- 01 BUSINESS -->
+    <section class="section" style="animation-delay:.06s">
+      <div class="section-head">
+        <div class="section-num">01 / 05</div>
+        <div class="section-title">About your business
+          <span class="darija">على المشروع ديالك</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">01—</span>In one or two sentences, what does your business do?
+          <span class="darija">بجوج جمل، شنو كيدير المشروع ديالك؟</span>
+        </label>
+        <textarea name="q1" rows="2" placeholder="Describe your business…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">02—</span>What products or services do you offer?
+          <span class="darija">أش من منتجات ولا خدمات كتقدم؟</span>
+        </label>
+        <textarea name="q3" rows="3" placeholder="List your main offerings…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">03—</span>What makes you different from your competitors? Why should someone choose you?
+          <span class="darija">شنو لي كيميزك على المنافسين ديالك؟ علاش خاص الواحد يختارك أنت؟</span>
+        </label>
+        <textarea name="q4" rows="3" placeholder="Your unique value proposition…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">04—</span>What are your main goals for the next 1–3 years?
+          <span class="darija">شنو هما الأهداف الكبار ديالك في العام ولا 3 سنين الجايين؟</span>
+        </label>
+        <textarea name="q5" rows="3" placeholder="Growth targets, new markets…"></textarea>
+      </div>
+    </section>
+
+    <!-- 02 AUDIENCE -->
+    <section class="section" style="animation-delay:.12s">
+      <div class="section-head">
+        <div class="section-num">02 / 05</div>
+        <div class="section-title">Your audience
+          <span class="darija">الجمهور ديالك</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">06—</span>Describe your ideal customer (age, gender, job, lifestyle, interests, where they live).
+          <span class="darija">وصف الكليان المثالي ديالك (العمر، الجنس، الخدمة، نمط الحياة، الاهتمامات، فين ساكن).</span>
+        </label>
+        <textarea name="q6" rows="4" placeholder="Paint a picture of your ideal customer…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">07—</span>What problem does your product or service solve for them?
+          <span class="darija">شنو المشكل لي كيحلو ليهم المنتج ولا الخدمة ديالك؟</span>
+        </label>
+        <textarea name="q7" rows="2" placeholder="The core problem you solve…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">08—</span>What do you want them to feel when they see your brand?
+          <span class="darija">شنو بغيتي يحسو بيه ملي يشوفو البراند ديالك؟</span>
+        </label>
+        <textarea name="q8" rows="2" placeholder="Emotions, feelings, impressions…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">09—</span>Where does your audience spend time?
+          <span class="darija">فين كيقضيو الوقت ديالهم الجمهور ديالك؟</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="q9" value="Instagram"> Instagram</label>
+          <label class="chip"><input type="checkbox" name="q9" value="TikTok"> TikTok</label>
+          <label class="chip"><input type="checkbox" name="q9" value="Facebook"> Facebook</label>
+          <label class="chip"><input type="checkbox" name="q9" value="LinkedIn"> LinkedIn</label>
+          <label class="chip"><input type="checkbox" name="q9" value="YouTube"> YouTube</label>
+          <label class="chip"><input type="checkbox" name="q9" value="In-person"> In person</label>
+          <label class="chip"><input type="checkbox" name="q9" value="Other"> Other</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 PERSONALITY -->
+    <section class="section" style="animation-delay:.18s">
+      <div class="section-head">
+        <div class="section-num">03 / 05</div>
+        <div class="section-title">Brand personality
+          <span class="darija">الشخصية ديال البراند</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">10—</span>If your brand were a person, how would you describe them in 5 words?
+          <span class="darija">لو كان البراند ديالك بنادم، كيفاش غادي توصفو فـ 5 كلمات؟</span>
+        </label>
+        <textarea name="q10" rows="2" placeholder="Bold, warm, playful, honest, modern…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">11—</span>Choose 3 words your brand IS and 3 words it IS NOT.
+          <span class="darija">ختار 3 كلمات البراند ديالك "هو" و 3 كلمات "ماشي هو".</span>
+        </label>
+        <textarea name="q11" rows="3" placeholder="IS: modern, bold, warm — IS NOT: corporate, loud, cheap…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">12—</span>What tone of voice feels right for your brand?
+          <span class="darija">شنو نوع اللهجة لي بغيتي للبراند ديالك؟</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="q12" value="Friendly"> Friendly</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Professional"> Professional</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Playful"> Playful</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Luxury"> Luxury</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Bold"> Bold</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Minimal"> Minimal</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Warm"> Warm</label>
+          <label class="chip"><input type="checkbox" name="q12" value="Authoritative"> Authoritative</label>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">13—</span>Are there any brands you admire? What do you like about them?
+          <span class="darija">واش كاينين براندات كتعجبك؟ شنو لي كيعجبك فيهم؟</span>
+        </label>
+        <textarea name="q13" rows="3" placeholder="Nike, Apple, a local brand… and why?"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">14—</span>Any brands or styles you want to AVOID looking like?
+          <span class="darija">واش كاينين براندات ولا ستايلات ما بغيتيش تشبه ليهم؟</span>
+        </label>
+        <textarea name="q14" rows="2" placeholder="Styles, aesthetics, or brands to avoid…"></textarea>
+      </div>
+    </section>
+
+    <!-- 04 VISUAL -->
+    <section class="section" style="animation-delay:.24s">
+      <div class="section-head">
+        <div class="section-num">04 / 05</div>
+        <div class="section-title">Visual preferences
+          <span class="darija">التفضيلات البصرية</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">15—</span>What colors represent your brand? Any to avoid?
+          <span class="darija">شنو الألوان لي كتعبر على براندك؟ واش كاينين ألوان خاص نتجنبوهم؟</span>
+        </label>
+        <textarea name="q15" rows="2" placeholder="Colors you love, colors to avoid…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">16—</span>What type of logo do you prefer?
+          <span class="darija">شنو نوع اللوگو لي كتفضل؟</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="q16" value="Symbol only"> Symbol only</label>
+          <label class="chip"><input type="radio" name="q16" value="Text only"> Text only</label>
+          <label class="chip"><input type="radio" name="q16" value="Both"> Both (symbol + text)</label>
+          <label class="chip"><input type="radio" name="q16" value="Not sure"> Not sure</label>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">17—</span>Describe the overall visual style you want.
+          <span class="darija">وصف الستايل البصري العام لي بغيتي.</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="q17" value="Modern"> Modern</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Classic"> Classic</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Bold"> Bold</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Minimal"> Minimal</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Vintage"> Vintage</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Playful"> Playful</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Luxury"> Luxury</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Organic"> Organic</label>
+          <label class="chip"><input type="checkbox" name="q17" value="Geometric"> Geometric</label>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">18—</span>Do you have existing visual assets we should keep or build from?
+          <span class="darija">واش عندك شي حاجات بصرية موجودة خاصنا نحافظو عليهم ولا نبنيو عليهم؟</span>
+        </label>
+        <textarea name="q18" rows="2" placeholder="Existing logo, colors, fonts, photos…"></textarea>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">19—</span>Where will the logo mainly be used?
+          <span class="darija">فين غادي يتستعمل اللوگو بزاف؟</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="q19" value="Website"> Website</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Social media"> Social media</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Packaging"> Packaging</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Shop sign"> Shop sign</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Uniforms"> Uniforms</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Print"> Print materials</label>
+          <label class="chip"><input type="checkbox" name="q19" value="Vehicles"> Vehicles</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 PROJECT -->
+    <section class="section" style="animation-delay:.30s">
+      <div class="section-head">
+        <div class="section-num">05 / 05</div>
+        <div class="section-title">Project details
+          <span class="darija">تفاصيل المشروع</span>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">20—</span>What deliverables do you need?
+          <span class="darija">شنو هما الحاجات لي محتاج؟</span>
+        </label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="q20" value="Logo"> Logo</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Brand guide"> Full brand guide</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Social templates"> Social templates</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Business cards"> Business cards</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Packaging"> Packaging</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Website"> Website</label>
+          <label class="chip"><input type="checkbox" name="q20" value="Stationery"> Stationery</label>
+        </div>
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">21—</span>What is your deadline or launch date?
+          <span class="darija">إمتا الديدلاين ولا تاريخ الإطلاق؟</span>
+        </label>
+        <input type="text" name="q22" placeholder="e.g. End of July 2026" />
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">22—</span>Who will make the final decisions on this project?
+          <span class="darija">شكون لي غادي ياخد القرارات النهائية؟</span>
+        </label>
+        <input type="text" name="q23" placeholder="Name / role…" />
+      </div>
+      <div class="q">
+        <label class="q-label"><span class="q-num">23—</span>Anything else you'd like us to know?
+          <span class="darija">واش كاين شي حاجة أخرى بغيتي تگول لينا؟</span>
+        </label>
+        <textarea name="q24" rows="4" placeholder="Any extra context, references, concerns…"></textarea>
+      </div>
+    </section>
+
+    <!-- Action bar -->
+    <div class="actions" id="actionBar">
+      <div class="progress-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-text"><strong id="progressCount">0</strong> / 23</span>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">✓ Submit Questionnaire</button>
+    </div>
+
+  </form>
+
+  <div class="footer">— End of questionnaire —</div>
+</div>
+
+<script>
+  const form = document.getElementById('bq-form');
+  const progressCount = document.getElementById('progressCount');
+  const progressFill = document.getElementById('progressFill');
+  const TOTAL = 23;
+
+  const countAnswered = () => {
+    const groups = {};
+    new FormData(form).forEach((value, key) => {
+      if (String(value).trim() !== "") groups[key] = true;
+    });
+    form.querySelectorAll('textarea, input[type="text"], input[type="email"], input[type="tel"]').forEach(el => {
+      if (el.value.trim() !== "") groups[el.name] = true;
+      else delete groups[el.name];
+    });
+    const count = Object.keys(groups).length;
+    progressCount.textContent = count;
+    progressFill.style.width = Math.min(100, (count / TOTAL) * 100) + '%';
+  };
+  form.addEventListener('input', countAnswered);
+  form.addEventListener('change', countAnswered);
+
+  // Handle form submission
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Get all form data
+    const formData = new FormData(form);
+    const clientName = formData.get('clientName');
+    const clientEmail = formData.get('clientEmail');
+
+    if (!clientName || !clientEmail) {
+      alert('Please enter your name and email');
+      return;
+    }
+
+    // Collect all answers
+    const answers = {};
+    formData.forEach((value, key) => {
+      if (key !== 'clientName' && key !== 'clientEmail') {
+        if (answers[key]) {
+          // Handle multiple values for checkboxes
+          answers[key] = answers[key] + ', ' + value;
+        } else {
+          answers[key] = value;
+        }
+      }
+    });
+
+    // Create submission object
+    const submission = {
+      clientName: clientName,
+      clientEmail: clientEmail,
+      timestamp: new Date().toISOString(),
+      answers: answers
+    };
+
+    // Save to localStorage (for responses dashboard)
+    let responses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
+    responses.push(submission);
+    localStorage.setItem('questionnaire_responses', JSON.stringify(responses));
+
+    // Also send to Netlify form handling
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(form))
+    }).catch(err => console.log('Form submission logged'));
+
+    // Show success message
+    alert('✓ Thank you! Your questionnaire has been submitted successfully.\n\nYour responses have been saved and the admin will review them shortly.');
+
+    // Reset form
+    form.reset();
+    countAnswered();
+
+    // Redirect to a thank you page or keep on current page
+    setTimeout(() => {
+      window.location.href = '/thank-you.html';
+    }, 2000);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+[build]
+  publish = "."
+  command = "echo 'Static site ready'"
+
+[dev]
+  command = "echo 'Serving files...'"
+  port = 8888
+
+# Form handling with Netlify Forms
+[[forms]]
+  name = "client-questionnaire"
+
+# Redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/responses"
+  to = "/responses.html"
+  status = 200
+
+[[redirects]]
+  from = "/thank-you"
+  to = "/thank-you.html"
+  status = 200
