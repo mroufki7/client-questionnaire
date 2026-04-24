@@ -467,38 +467,35 @@
 
   let allSubmissions = [];
 
-  // ─── Fetch from Netlify Forms API ────────────────────────────────────────
-  async function fetchSubmissions() {
-    try {
-      const res = await fetch('/.netlify/forms/client-questionnaire/submissions');
-      if (!res.ok) throw new Error('not_netlify');
-      const data = await res.json();
-      allSubmissions = Array.isArray(data) ? data : [];
-      document.getElementById('totalCount').textContent = allSubmissions.length;
+  // ─── Load from localStorage ───────────────────────────────────────────────
+  function fetchSubmissions() {
+    const stored = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
+    // Normalise: support both {data, timestamp} and legacy flat objects
+    allSubmissions = stored.map(s => ({
+      data: s.data || s,
+      timestamp: s.timestamp || s.created_at || new Date().toISOString()
+    })).reverse(); // most recent first
 
-      if (allSubmissions.length === 0) { showEmpty(); return; }
+    document.getElementById('totalCount').textContent = allSubmissions.length;
 
-      const sel = document.getElementById('submissionSelect');
-      sel.innerHTML = allSubmissions.map((s, i) => {
-        const name = s.data?.clientName || 'Anonymous';
-        const date = new Date(s.created_at).toLocaleDateString('en-GB', {
-          day: '2-digit', month: 'short', year: 'numeric'
-        });
-        return `<option value="${i}">${esc(name)} — ${date}</option>`;
-      }).join('');
+    if (allSubmissions.length === 0) { showEmpty(); return; }
 
-      showSubmission(0);
-    } catch (_) {
-      showNetlifyNote();
-    }
+    const sel = document.getElementById('submissionSelect');
+    sel.innerHTML = allSubmissions.map((s, i) => {
+      const name = s.data.clientName || 'Anonymous';
+      const date = new Date(s.timestamp).toLocaleDateString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+      return `<option value="${i}">${esc(name)} — ${date}</option>`;
+    }).join('');
+
+    showSubmission(0);
   }
 
   function showSubmission(index) {
     const sub = allSubmissions[index];
     if (!sub) return;
-    const data = sub.data || {};
-    const date = new Date(sub.created_at);
-    renderSections(data, date);
+    renderSections(sub.data, new Date(sub.timestamp));
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -556,7 +553,7 @@
       .replace(/"/g, '&quot;');
   }
 
-  // ─── States ───────────────────────────────────────────────────────────────
+  // ─── Empty state ─────────────────────────────────────────────────────────
   function showEmpty() {
     document.getElementById('submissionSelect').innerHTML = '<option>— no responses yet —</option>';
     document.getElementById('responseBody').innerHTML = `
@@ -564,22 +561,6 @@
         <div class="state-icon">📭</div>
         <div class="state-title">No responses yet</div>
         <div class="state-text">Responses will appear here once clients submit the questionnaire.</div>
-      </div>`;
-  }
-
-  function showNetlifyNote() {
-    document.getElementById('totalCount').textContent = '—';
-    document.getElementById('submissionSelect').innerHTML = '<option>— deploy to Netlify to load responses —</option>';
-    document.getElementById('responseBody').innerHTML = `
-      <div class="state-card">
-        <div class="state-icon">☁️</div>
-        <div class="state-title">Deploy to Netlify to view responses</div>
-        <div class="state-text">
-          This page reads submissions directly from <strong>Netlify Forms</strong>.<br><br>
-          Once live, all client responses will appear here — structured exactly like the questionnaire, one at a time.<br><br>
-          You can also view and export them at your
-          <a href="https://app.netlify.com" target="_blank" rel="noopener">Netlify dashboard → Forms</a>.
-        </div>
       </div>`;
   }
 
@@ -595,7 +576,7 @@
     const rows = allSubmissions.map(s => {
       const d = s.data || {};
       return [
-        new Date(s.created_at).toLocaleString(),
+        new Date(s.timestamp).toLocaleString(),
         ...allKeys.map(k => `"${String(d[k] || '').replace(/"/g, '""')}"`)
       ];
     });
