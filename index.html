@@ -429,7 +429,7 @@
     </div>
   </div>
 
-  <form id="bq-form" name="client-questionnaire" method="POST" netlify>
+  <form id="bq-form">
     
     <!-- CLIENT INFO -->
     <section class="section" style="animation-delay:.06s">
@@ -721,64 +721,30 @@
   form.addEventListener('input', countAnswered);
   form.addEventListener('change', countAnswered);
 
-  // Handle form submission
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Get all form data
     const formData = new FormData(form);
-    const clientName = formData.get('clientName');
-    const clientEmail = formData.get('clientEmail');
+    const clientName = String(formData.get('clientName') || '').trim();
+    const clientEmail = String(formData.get('clientEmail') || '').trim();
 
-    if (!clientName || !clientEmail) {
-      alert('Please enter your name and email');
-      return;
-    }
+    if (!clientName) { alert('Please enter your name.'); return; }
+    if (!clientEmail) { alert('Please enter your email.'); return; }
 
-    // Collect all answers
-    const answers = {};
+    // Collect answers (merge multi-value checkboxes)
+    const data = {};
     formData.forEach((value, key) => {
-      if (key !== 'clientName' && key !== 'clientEmail') {
-        if (answers[key]) {
-          // Handle multiple values for checkboxes
-          answers[key] = answers[key] + ', ' + value;
-        } else {
-          answers[key] = value;
-        }
-      }
+      if (!String(value).trim()) return;
+      data[key] = data[key] ? data[key] + ', ' + value : value;
     });
 
-    // Create submission object
-    const submission = {
-      clientName: clientName,
-      clientEmail: clientEmail,
-      timestamp: new Date().toISOString(),
-      answers: answers
-    };
+    // Save to localStorage
+    const stored = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
+    stored.push({ data, timestamp: new Date().toISOString() });
+    localStorage.setItem('questionnaire_responses', JSON.stringify(stored));
 
-    // Save to localStorage (for responses dashboard)
-    let responses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
-    responses.push(submission);
-    localStorage.setItem('questionnaire_responses', JSON.stringify(responses));
-
-    // Also send to Netlify form handling
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(new FormData(form))
-    }).catch(err => console.log('Form submission logged'));
-
-    // Show success message
-    alert('✓ Thank you! Your questionnaire has been submitted successfully.\n\nYour responses have been saved and the admin will review them shortly.');
-
-    // Reset form
-    form.reset();
-    countAnswered();
-
-    // Redirect to a thank you page or keep on current page
-    setTimeout(() => {
-      window.location.href = '/thank-you.html';
-    }, 2000);
+    // Redirect to thank-you
+    window.location.href = '/thank-you.html';
   });
 </script>
 </body>
